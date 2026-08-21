@@ -238,14 +238,14 @@ hmp.weight.cv
 
 ## ----eval=FALSE---------------------------------------------------------------
 # weighted.candidates <- list(
-#   weighted_default = weighted.grip(
+#   weighted_default = grip(metric = "edge_length",
 #     adj_list = hmp.u01.gc.coarse$adj_list,
 #     weight_list = hmp.u01.gc.coarse$weight_list,
 #     n = length(hmp.u01.gc.coarse$adj_list),
 #     dim = 3,
 #     seed = 1
 #   ),
-#   weighted_irregular = weighted.grip(
+#   weighted_irregular = grip(metric = "edge_length",
 #     adj_list = hmp.u01.gc.coarse$adj_list,
 #     weight_list = hmp.u01.gc.coarse$weight_list,
 #     n = length(hmp.u01.gc.coarse$adj_list),

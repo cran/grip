@@ -115,7 +115,7 @@ weighted.mesh <- mesh.surface.graph(
   amplitude = 0.8
 )
 
-weighted.trace <- trace.weighted.grip(
+weighted.trace <- trace.grip(metric = "edge_length",
   weighted.mesh$edges,
   n = weighted.mesh$n,
   edge_weights = weighted.mesh$edge_weights,

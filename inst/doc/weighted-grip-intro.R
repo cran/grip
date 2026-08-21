@@ -49,7 +49,7 @@ coords.unweighted <- grip(
   seed = 1
 )
 
-coords.weighted <- weighted.grip(
+coords.weighted <- grip(metric = "edge_length",
   surface.mesh$edges,
   n = surface.mesh$n,
   edge_weights = surface.mesh$edge_weights,
@@ -108,7 +108,7 @@ plot.layout.triptych(
 )
 
 ## -----------------------------------------------------------------------------
-coords.weighted.2d <- weighted.grip(
+coords.weighted.2d <- grip(metric = "edge_length",
   surface.mesh$edges,
   n = surface.mesh$n,
   edge_weights = surface.mesh$edge_weights,
@@ -117,7 +117,7 @@ coords.weighted.2d <- weighted.grip(
   seed = 2
 )
 
-coords.weighted.3d <- weighted.grip(
+coords.weighted.3d <- grip(metric = "edge_length",
   surface.mesh$edges,
   n = surface.mesh$n,
   edge_weights = surface.mesh$edge_weights,
@@ -187,7 +187,7 @@ tree.graph <- kary.tree.weighted.graph(
   branch_spread = 0.25
 )
 
-tree.coords <- weighted.grip(
+tree.coords <- grip(metric = "edge_length",
   tree.graph$edges,
   n = tree.graph$n,
   edge_weights = tree.graph$edge_weights,
@@ -219,7 +219,7 @@ plot.layout(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# surface.trace <- trace.weighted.grip(
+# surface.trace <- trace.grip(metric = "edge_length",
 #   surface.mesh$edges,
 #   n = surface.mesh$n,
 #   edge_weights = surface.mesh$edge_weights,
