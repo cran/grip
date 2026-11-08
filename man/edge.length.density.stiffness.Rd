@@ -5,52 +5,52 @@
 \title{Construct edge-length stiffnesses for edge-isometric GMDS layouts}
 \usage{
 edge.length.density.stiffness(
-  edge_weights,
+  edge.weights,
   method = c("density", "uniform", "distance_power"),
   mix = 0,
   bandwidth = NULL,
-  density_n = 512L,
+  density.n = 512L,
   transform = c("identity", "sqrt", "log"),
-  distance_power = 0,
-  stiffness_floor = 0,
-  stiffness_ceiling = Inf
+  distance.power = 0,
+  stiffness.floor = 0,
+  stiffness.ceiling = Inf
 )
 }
 \arguments{
-\item{edge_weights}{Positive numeric edge lengths.}
+\item{edge.weights}{Positive numeric edge lengths.}
 
-\item{method}{Stiffness rule. `"density"` estimates an empirical density,
-`"uniform"` returns equal stiffnesses, and `"distance_power"` uses
-`(w / median(w))^distance_power`.}
+\item{method}{Stiffness rule. \code{"density"} estimates an empirical density,
+\code{"uniform"} returns equal stiffnesses, and \code{"distance_power"} uses
+\code{(w / median(w))^distance.power}.}
 
-\item{mix}{Continuation parameter in `[0, 1]`. `0` uses the selected method;
-`1` returns uniform stiffness.}
+\item{mix}{Continuation parameter in \verb{[0, 1]}. \code{0} uses the selected method;
+\code{1} returns uniform stiffness.}
 
-\item{bandwidth}{Optional bandwidth passed to `stats::density()`.}
+\item{bandwidth}{Optional bandwidth passed to \code{stats::density()}.}
 
-\item{density_n}{Number of evaluation points for `stats::density()`.}
+\item{density.n}{Number of evaluation points for \code{stats::density()}.}
 
 \item{transform}{Optional transformation of the raw density/power signal
 before mixing and normalization.}
 
-\item{distance_power}{Exponent for `method = "distance_power"`.}
+\item{distance.power}{Exponent for \code{method = "distance_power"}.}
 
-\item{stiffness_floor, stiffness_ceiling}{Optional clipping bounds applied
+\item{stiffness.floor, stiffness.ceiling}{Optional clipping bounds applied
 before the final mean-one normalization.}
 }
 \value{
-A list with `stiffness`, raw signal diagnostics, estimated mode, and
-  clipping/normalization metadata.
+A list with \code{stiffness}, raw signal diagnostics, estimated mode, and
+clipping/normalization metadata.
 }
 \description{
-`edge.length.density.stiffness()` constructs stiffnesses for edge-only
+\code{edge.length.density.stiffness()} constructs stiffnesses for edge-only
 geodesic-MDS layouts. It turns positive edge lengths into
-spring stiffnesses normalized to mean one. The `"density"` method emphasizes
-edge lengths near the empirical edge-length density mode, and `mix` provides
+spring stiffnesses normalized to mean one. The \code{"density"} method emphasizes
+edge lengths near the empirical edge-length density mode, and \code{mix} provides
 a continuation path from that density-weighted signal to uniform stiffness.
 }
 \examples{
 stiffness <- edge.length.density.stiffness(
-  c(0.8, 0.9, 1, 1.1, 1.2, 1.3), density_n = 32
+  c(0.8, 0.9, 1, 1.1, 1.2, 1.3), density.n = 32
 )
 }

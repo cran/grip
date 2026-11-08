@@ -26,6 +26,8 @@ script_path <- if (!is.null(sys.frames()[[1]]$ofile)) {
   )
 }
 
+source(file.path(dirname(script_path), "portable-session-info.R"))
+
 source_root <- normalizePath(
   file.path(dirname(script_path), "..", ".."),
   winslash = "/",
@@ -165,8 +167,8 @@ karate.grip.default <- grip(karate.edges, n = karate.n, dim = 2, seed = 1)
 ## parameters: more rounds for convergence, moderate repulsion to spread
 ## the dense core, and barycenter placement.
 karate.grip.tuned   <- grip(karate.edges, n = karate.n, dim = 2,
-                                    rounds = 128, final_rounds = 192,
-                                    num_nbrs = 16, repulsion_factor = 2.0,
+                                    rounds = 128, final.rounds = 192,
+                                    num.nbrs = 16, repulsion.factor = 2.0,
                                     r = 0.05, s = 5.0, seed = 1)
 
 karate.scores <- rbind(
@@ -314,14 +316,14 @@ saddle.grip.combinatorial <- grip(
 )
 saddle.grip.weighted <- grip(
   saddle.graph$edges, n = saddle.graph$n,
-  edge_weights = saddle.graph$edge_weights,
+  edge.weights = saddle.graph$edge_weights,
   dim = 3, preset = "mesh", metric = "edge_length", seed = 1
 )
 saddle.grip.lgkk <- grip(
   saddle.graph$edges, n = saddle.graph$n,
-  edge_weights = saddle.graph$edge_weights,
+  edge.weights = saddle.graph$edge_weights,
   dim = 3, preset = "mesh", metric = "edge_length",
-  lgkk_polish_rounds = 6L, seed = 1
+  lgkk.polish.rounds = 6L, seed = 1
 )
 set.seed(1)
 saddle.kk.weighted <- as_coord_matrix(layout_with_kk(
@@ -333,7 +335,7 @@ saddle.kk.weighted <- as_coord_matrix(layout_with_kk(
 saddle.prepared <- prepare.geodesic.kk(
   saddle.graph$edges,
   n = saddle.graph$n,
-  edge_weights = saddle.graph$edge_weights
+  edge.weights = saddle.graph$edge_weights
 )
 saddle.layouts <- list(
   "Combinatorial GRIP" = saddle.grip.combinatorial,
@@ -377,7 +379,7 @@ hmp.timed <- list(
   "DrL (igraph)" = time_layout(function() layout_with_drl(hmp.ig)),
   "Stress (graphlayouts)" = time_layout(function() layout_with_stress(hmp.ig)),
   "grip default (hop)" = time_layout(function() {
-    grip(adj_list = hmp.adj, n = hmp.n, dim = 2, seed = 1)
+    grip(adj.list = hmp.adj, n = hmp.n, dim = 2, seed = 1)
   })
 )
 hmp.layouts <- lapply(hmp.timed, `[[`, "coords")
@@ -410,7 +412,7 @@ results$hmp <- list(
 )
 
 ## ---- save ----------------------------------------------------------
-results$session_info <- utils::sessionInfo()
+results$session_info <- portable_session_info()
 blas_path <- extSoftVersion()[["BLAS"]]
 if (!is.na(blas_path) && nzchar(blas_path)) {
   r_home <- normalizePath(R.home(), winslash = "/", mustWork = TRUE)

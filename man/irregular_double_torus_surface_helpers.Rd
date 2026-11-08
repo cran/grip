@@ -7,18 +7,18 @@
 \usage{
 irregular.double.torus.surface.graph(
   slices = 11,
-  tube_count = 14,
-  branch_length = 0.85,
-  branch_offset = 0.72,
-  tube_radius = 0.28,
-  transition_width = 0.42,
-  count_irregularity = 0.2,
-  axial_irregularity = 0.3,
-  phase_twist = 0.35,
+  tube.count = 14,
+  branch.length = 0.85,
+  branch.offset = 0.72,
+  tube.radius = 0.28,
+  transition.width = 0.42,
+  count.irregularity = 0.2,
+  axial.irregularity = 0.3,
+  phase.twist = 0.35,
   surface = c("standard", "bulged", "twisted", "wavy"),
   amplitude = 0.25,
-  freq_x = 2,
-  freq_theta = 2,
+  freq.x = 2,
+  freq.theta = 2,
   twist = 0.6,
   normalize = c("median", "mean", "none")
 )
@@ -26,24 +26,24 @@ irregular.double.torus.surface.graph(
 \arguments{
 \item{slices}{Number of non-pole slices through the double torus.}
 
-\item{tube_count}{Approximate number of vertices around each tube-like loop.}
+\item{tube.count}{Approximate number of vertices around each tube-like loop.}
 
-\item{branch_length}{Half-length of the three-loop central region.}
+\item{branch.length}{Half-length of the three-loop central region.}
 
-\item{branch_offset}{Offset of the outer loop centers from the central loop.}
+\item{branch.offset}{Offset of the outer loop centers from the central loop.}
 
-\item{tube_radius}{Baseline radius of each tube-like loop.}
+\item{tube.radius}{Baseline radius of each tube-like loop.}
 
-\item{transition_width}{Width of the left and right transition regions
+\item{transition.width}{Width of the left and right transition regions
 between the single-loop and three-loop slices.}
 
-\item{count_irregularity}{Irregularity level for the per-component sample
+\item{count.irregularity}{Irregularity level for the per-component sample
 counts. Must lie in \code{[0, 1)}.}
 
-\item{axial_irregularity}{Irregularity level for the slice spacing. Must lie
+\item{axial.irregularity}{Irregularity level for the slice spacing. Must lie
 in \code{[0, 1]}.}
 
-\item{phase_twist}{Finite phase offset used to desynchronize neighboring
+\item{phase.twist}{Finite phase offset used to desynchronize neighboring
 cyclic slices.}
 
 \item{surface}{Double-torus geometry family. One of \code{"standard"},
@@ -51,10 +51,10 @@ cyclic slices.}
 
 \item{amplitude}{Finite deformation amplitude.}
 
-\item{freq_x}{Positive modulation frequency along the axial direction. Used
+\item{freq.x}{Positive modulation frequency along the axial direction. Used
 only when \code{surface = "wavy"}.}
 
-\item{freq_theta}{Positive angular modulation frequency around the local
+\item{freq.theta}{Positive angular modulation frequency around the local
 tube direction. Used only when \code{surface = "wavy"}.}
 
 \item{twist}{Finite twist strength used only when
@@ -70,30 +70,30 @@ numeric matrix with columns \code{x}, \code{y}, and \code{z}.
 \code{irregular.double.torus.surface.graph()} returns a list with
 components:
 \itemize{
-  \item \code{edges}: the irregular double-torus edges,
-  \item \code{n}: number of vertices,
-  \item \code{edge_weights}: induced positive edge lengths,
-  \item \code{coords_surface}: the 3D embedding,
-  \item \code{coords_param}: the canonical 3D double-torus coordinates,
-  \item \code{weight_scale}: the normalization constant applied to the raw
-    edge lengths,
-  \item \code{family}: always \code{"irregular.double.torus"},
-  \item \code{surface}: the chosen surface name,
-  \item \code{slices}: number of non-pole slices,
-  \item \code{slice_sizes}: vertex counts in each slice,
-  \item \code{slice_components}: number of cyclic components in each slice,
-  \item \code{label}: a human-readable family label.
+\item \code{edges}: the irregular double-torus edges,
+\item \code{n}: number of vertices,
+\item \code{edge_weights}: induced positive edge lengths,
+\item \code{coords_surface}: the 3D embedding,
+\item \code{coords_param}: the canonical 3D double-torus coordinates,
+\item \code{weight_scale}: the normalization constant applied to the raw
+edge lengths,
+\item \code{family}: always \code{"irregular.double.torus"},
+\item \code{surface}: the chosen surface name,
+\item \code{slices}: number of non-pole slices,
+\item \code{slice_sizes}: vertex counts in each slice,
+\item \code{slice_components}: number of cyclic components in each slice,
+\item \code{label}: a human-readable family label.
 }
 }
 \description{
 Convenience helpers that build a closed genus-2 surface from a
 deterministically irregular slice family whose cyclic cross-sections follow a
-`1 -> 3 -> 1` loop transition between two poles. This gives a non-lattice,
+\code{1 -> 3 -> 1} loop transition between two poles. This gives a non-lattice,
 point-sampled double-torus graph together with either the canonical 3D
 embedding or simple bulged, twisted, and wavy deformations of that geometry.
 }
 \examples{
 double_torus <- irregular.double.torus.surface.graph(
-  slices = 7, tube_count = 8
+  slices = 7, tube.count = 8
 )
 }

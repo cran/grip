@@ -105,3 +105,35 @@ grip_optimize_kernel_gram_gkk_layout_cpp <- function(edges, edge_weights, edge_s
     .Call(`_grip_grip_optimize_kernel_gram_gkk_layout_cpp`, edges, edge_weights, edge_stiffness, star_center, star_v1, star_v2, star_w1, star_w2, star_cos, star_weight, coords, max_iter, scale_mode, scale, lambda_edge, lambda_gram, edge_length_epsilon, initial_step, step_shrink, armijo_factor, grad_tol, min_step, distance_floor, recenter, return_trace)
 }
 
+grip_constraint_graph_cpp <- function(n, pairs, targets, include_adjacency = TRUE) {
+    .Call(`_grip_grip_constraint_graph_cpp`, n, pairs, targets, include_adjacency)
+}
+
+grip_sgd_mds_cpp <- function(start, targets, rates, seed, checkpoint_every, max_workspace_bytes, shuffle = TRUE, weights = NULL, endpoints = NULL, reverse_weights = NULL, retain_best = TRUE, state = NULL, stopping = NULL, schedule_epochs = 0L, keep_state = FALSE, update_trace = NULL) {
+    .Call(`_grip_grip_sgd_mds_cpp`, start, targets, rates, seed, checkpoint_every, max_workspace_bytes, shuffle, weights, endpoints, reverse_weights, retain_best, state, stopping, schedule_epochs, keep_state, update_trace)
+}
+
+grip_sgd_state_hash_cpp <- function(bytes) {
+    .Call(`_grip_grip_sgd_state_hash_cpp`, bytes)
+}
+
+grip_sgd_state_hash_object_cpp <- function(object) {
+    .Call(`_grip_grip_sgd_state_hash_object_cpp`, object)
+}
+
+grip_sgd_weight_range_cpp <- function(first, second) {
+    .Call(`_grip_grip_sgd_weight_range_cpp`, first, second)
+}
+
+grip_surface_distances_cpp <- function(points, vertices, triangles) {
+    .Call(`_grip_grip_surface_distances_cpp`, points, vertices, triangles)
+}
+
+grip_sparse_prepare_cpp <- function(n, edges, lengths, h, supplied, seed, max_workspace_bytes, observations = NULL, selection = "randomized", region_weighting = TRUE, save_distances = FALSE, metric = "euclidean") {
+    .Call(`_grip_grip_sparse_prepare_cpp`, n, edges, lengths, h, supplied, seed, max_workspace_bytes, observations, selection, region_weighting, save_distances, metric)
+}
+
+grip_linf_knn_cpp <- function(X, q, max_workspace_bytes) {
+    .Call(`_grip_grip_linf_knn_cpp`, X, q, max_workspace_bytes)
+}
+

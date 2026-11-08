@@ -11,8 +11,13 @@
 \arguments{
 \item{x}{Numeric coordinate matrix with at least two columns.}
 
-\item{...}{Additional parameters passed to the underlying \code{plot()} call
-for 2D layouts or the \pkg{rgl} 3D plotting call.}
+\item{...}{For static plots, base graphics options override defaults, including
+\code{asp}, axis labels, limits, \code{pch}, \code{cex}, and vertex
+\code{col}/\code{bg}. In an orthographic plot, symbol, size, color,
+line width and \code{type} options are passed to \code{points()}; other
+options configure the plot region. Edges use \code{edge.col}. For
+interactive plots, options go to \code{rgl::plot3d()} and follow its
+conventions (for example \code{size}, not base-graphics \code{cex}).}
 
 \item{edges}{Optional two-column matrix of edges (1-based vertex ids).}
 
@@ -51,8 +56,8 @@ For 3D layouts, the behaviour depends on the \code{projection} argument:
 edges <- cbind(1:5, 2:6)
 coords <- grip(edges, n = 6, dim = 2,
                       placement = "barycenter",
-                      rounds = 5, final_rounds = 5,
-                      num_init = 3, num_nbrs = 4,
+                      rounds = 5, final.rounds = 5,
+                      num.init = 3, num.nbrs = 4,
                       seed = 1)
 plot.layout(coords, edges, main = "Path graph", pch = 16, cex = 0.8)
 }

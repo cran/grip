@@ -24,8 +24,13 @@
 #' @param vertex.col Colour(s) for the vertices. Recycled to match the number
 #'   of vertices. Default \code{"black"}.
 #' @param edge.col Colour for the edges. Default \code{"gray70"}.
-#' @param ... Additional parameters passed to the underlying \code{plot()} call
-#'   for 2D layouts or the \pkg{rgl} 3D plotting call.
+#' @param ... For static plots, base graphics options override defaults, including
+#'   \code{asp}, axis labels, limits, \code{pch}, \code{cex}, and vertex
+#'   \code{col}/\code{bg}. In an orthographic plot, symbol, size, color,
+#'   line width and \code{type} options are passed to \code{points()}; other
+#'   options configure the plot region. Edges use \code{edge.col}. For
+#'   interactive plots, options go to \code{rgl::plot3d()} and follow its
+#'   conventions (for example \code{size}, not base-graphics \code{cex}).
 #' @return NULL (called for side effects).
 #' @usage \method{plot}{layout}(x, ..., edges = NULL,
 #'   projection = c("rgl", "ortho"), azimuth = 35, elevation = 22,
@@ -34,8 +39,8 @@
 #' edges <- cbind(1:5, 2:6)
 #' coords <- grip(edges, n = 6, dim = 2,
 #'                       placement = "barycenter",
-#'                       rounds = 5, final_rounds = 5,
-#'                       num_init = 3, num_nbrs = 4,
+#'                       rounds = 5, final.rounds = 5,
+#'                       num.init = 3, num.nbrs = 4,
 #'                       seed = 1)
 #' plot.layout(coords, edges, main = "Path graph", pch = 16, cex = 0.8)
 #' @importFrom graphics segments points
@@ -63,9 +68,19 @@ plot.layout <- function(x,
     }
   }
 
-  if (!is.matrix(coords) || ncol(coords) < 2) {
+  merge.args <- function(defaults, supplied) {
+    defaults[names(supplied)] <- supplied
+    defaults
+  }
+  if (length(dots) && (is.null(names(dots)) || any(!nzchar(names(dots))) ||
+                       anyDuplicated(names(dots)))) {
+    stop("Plot options in ... must have unique names; supply edges with edges =")
+  }
+
+  if (!is.matrix(coords) || !is.numeric(coords) || ncol(coords) < 2) {
     stop("x must be a numeric matrix with at least 2 columns")
   }
+  if (!is.null(edges)) grip.validate.graph.arguments(edges = edges, n = nrow(coords))
   projection <- match.arg(projection)
   d <- ncol(coords)
 
@@ -73,7 +88,8 @@ plot.layout <- function(x,
   if (d == 2) {
     do.call(
       graphics::plot,
-      c(list(x = coords[, 1], y = coords[, 2], asp = 1, col = vertex.col), dots)
+      merge.args(list(x = coords[, 1], y = coords[, 2], asp = 1, col = vertex.col,
+                      xlab = "", ylab = ""), dots)
     )
     if (!is.null(edges) && nrow(edges) > 0) {
       apply(edges, 1, function(e) {
@@ -95,9 +111,13 @@ plot.layout <- function(x,
     if (!is.finite(xpad) || xpad == 0) xpad <- 0.2
     if (!is.finite(ypad) || ypad == 0) ypad <- 0.2
 
+    vertex.names <- intersect(names(dots), c("pch", "cex", "col", "bg", "lwd", "lty", "type"))
+    vertex.args <- merge.args(list(pch = 16, cex = 0.55, col = vertex.col),
+                              dots[vertex.names])
+    region.args <- dots[setdiff(names(dots), vertex.names)]
     do.call(
       graphics::plot,
-      c(
+      merge.args(
         list(
           x = xy[, 1], y = xy[, 2],
           type = "n", asp = 1, axes = FALSE,
@@ -105,7 +125,7 @@ plot.layout <- function(x,
           xlim = xlim + c(-xpad, xpad),
           ylim = ylim + c(-ypad, ypad)
         ),
-        dots
+        region.args
       )
     )
     if (!is.null(edges) && nrow(edges) > 0) {
@@ -115,8 +135,7 @@ plot.layout <- function(x,
                            col = edge.col)
       })
     }
-    graphics::points(xy[, 1], xy[, 2], pch = 16, cex = 0.55,
-                     col = vertex.col)
+    do.call(graphics::points, c(list(x = xy[, 1], y = xy[, 2]), vertex.args))
     return(invisible(NULL))
   }
 
@@ -124,7 +143,7 @@ plot.layout <- function(x,
   if (d >= 3 && requireNamespace("rgl", quietly = TRUE)) {
     do.call(
       rgl::plot3d,
-      c(list(x = coords[, 1], y = coords[, 2], z = coords[, 3], col = vertex.col), dots)
+      merge.args(list(x = coords[, 1], y = coords[, 2], z = coords[, 3], col = vertex.col), dots)
     )
     if (!is.null(edges) && nrow(edges) > 0) {
       apply(edges, 1, function(e) {

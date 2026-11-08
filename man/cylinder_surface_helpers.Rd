@@ -12,8 +12,8 @@ cylinder.surface.graph(
   radius = 1,
   height = 2,
   amplitude = 0.3,
-  freq_theta = 2,
-  freq_z = 1,
+  freq.theta = 2,
+  freq.z = 1,
   twist = 0.25,
   normalize = c("median", "mean", "none")
 )
@@ -33,10 +33,10 @@ cylinder.surface.graph(
 \item{amplitude}{Finite numeric deformation amplitude. The resulting radius
 profile must stay positive everywhere.}
 
-\item{freq_theta}{Positive angular frequency used only when
+\item{freq.theta}{Positive angular frequency used only when
 \code{surface = "wavy"}.}
 
-\item{freq_z}{Positive vertical frequency used only when
+\item{freq.z}{Positive vertical frequency used only when
 \code{surface = "wavy"}.}
 
 \item{twist}{Finite angular twist applied linearly with height.}
@@ -50,16 +50,16 @@ with columns \code{x}, \code{y}, and \code{z}.
 
 \code{cylinder.surface.graph()} returns a list with components:
 \itemize{
-  \item \code{edges}: the undirected cylindrical-grid edges,
-  \item \code{n}: number of vertices,
-  \item \code{edge_weights}: induced positive edge lengths,
-  \item \code{coords_surface}: the 3D surface embedding,
-  \item \code{coords_param}: the 2D unwrapped parameter coordinates,
-  \item \code{weight_scale}: the normalization constant applied to the raw
-    edge lengths,
-  \item \code{family}: always \code{"cylinder"},
-  \item \code{surface}: the chosen surface name,
-  \item \code{label}: a human-readable family label.
+\item \code{edges}: the undirected cylindrical-grid edges,
+\item \code{n}: number of vertices,
+\item \code{edge_weights}: induced positive edge lengths,
+\item \code{coords_surface}: the 3D surface embedding,
+\item \code{coords_param}: the 2D unwrapped parameter coordinates,
+\item \code{weight_scale}: the normalization constant applied to the raw
+edge lengths,
+\item \code{family}: always \code{"cylinder"},
+\item \code{surface}: the chosen surface name,
+\item \code{label}: a human-readable family label.
 }
 }
 \description{
@@ -70,8 +70,8 @@ graph topology is cylindrical but the intended metric comes from a curved or
 spatially varying 3D realization.
 }
 \details{
-The `coords_surface` component contains the 3D coordinates of the embedded
-cylindrical grid. `cylinder.surface.graph()` returns a reusable weighted-graph
+The \code{coords.surface} component contains the 3D coordinates of the embedded
+cylindrical grid. \code{cylinder.surface.graph()} returns a reusable weighted-graph
 bundle containing the cylinder edges, induced edge weights, the 3D surface
 coordinates, and a 2D unwrapped parameterization.
 }

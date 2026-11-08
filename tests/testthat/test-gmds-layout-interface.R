@@ -2,7 +2,7 @@ test_that("GMDS layout result constructor preserves common shape", {
   prepared <- prepare.graph.geodesic.mds(
     edges = edges.path(4L),
     n = 4L,
-    edge_weights = c(1, 2, 1)
+    edge.weights = c(1, 2, 1)
   )
   coords <- cbind(c(0, 1, 3, 4), 0)
   diagnostics <- score.gmds(coords, prepared = prepared)
@@ -33,13 +33,13 @@ test_that("common diagnostics are exact on a weighted path realization", {
   prepared <- prepare.graph.geodesic.mds(
     edges = edges.path(4L),
     n = 4L,
-    edge_weights = c(1, 2, 1)
+    edge.weights = c(1, 2, 1)
   )
   coords <- cbind(c(0, 1, 3, 4), 0)
   diagnostics <- score.gmds(
     coords = coords,
     prepared = prepared,
-    scale_mode = "identity"
+    scale.mode = "identity"
   )
 
   expect_lt(diagnostics$edge.rel.rmse[[1L]], 1e-8)
@@ -73,7 +73,7 @@ test_that("flat path-length diagnostics handle tie-averaged path coefficients", 
   prepared <- prepare.graph.geodesic.mds(
     edges = edges,
     n = 4L,
-    tie_mode = "average"
+    tie.mode = "average"
   )
   coords <- rbind(
     c(0, 0),
@@ -87,16 +87,16 @@ test_that("flat path-length diagnostics handle tie-averaged path coefficients", 
   expect_equal(fast, fallback, tolerance = 1e-12)
 })
 
-test_that("metric MDS baseline returns common GMDS layout result", {
+test_that("classical MDS baseline returns common GMDS layout result", {
   prepared <- prepare.graph.geodesic.mds(
     edges = edges.path(5L),
     n = 5L,
-    edge_weights = rep(1, 4L)
+    edge.weights = rep(1, 4L)
   )
-  layout <- metric.mds(prepared = prepared, dim = 2L)
+  layout <- classical.mds(prepared = prepared, dim = 2L)
 
   expect_s3_class(layout, "grip_gmds_layout")
-  expect_equal(layout$method, "metric_mds")
+  expect_equal(layout$method, "classical_mds")
   expect_equal(dim(layout$coords), c(5L, 2L))
   expect_true(all(is.finite(layout$coords)))
   expect_true(is.data.frame(layout$diagnostics))
@@ -106,23 +106,28 @@ test_that("metric MDS baseline returns common GMDS layout result", {
   expect_true("positive_eigen_fraction" %in% names(layout$metadata))
 })
 
-test_that("metric MDS skips full path cache for cold no-diagnostic calls", {
+test_that("classical MDS skips full path cache for cold no-diagnostic calls", {
   edges <- edges.mesh(6L, 6L)
   prepared <- prepare.graph.geodesic.mds(edges = edges, n = 36L)
-  full <- metric.mds(prepared = prepared, dim = 2L, diagnostics = FALSE)
-  fast <- metric.mds(edges = edges, n = 36L, dim = 2L, diagnostics = FALSE)
+  full <- classical.mds(prepared = prepared, dim = 2L, diagnostics = FALSE)
+  fast <- classical.mds(edges = edges, n = 36L, dim = 2L, diagnostics = FALSE)
 
   expect_s3_class(fast, "grip_gmds_layout")
   expect_s3_class(fast$prepared, "grip_metric_mds_prepared")
   expect_equal(fast$prepared$pair_mode, "distance_matrix_only")
   expect_equal(length(fast$prepared$path_edges), 0L)
-  expect_equal(fast$coords, full$coords, tolerance = 1e-10)
+  expect_equal(fast$prepared$distance_matrix, prepared$distance_matrix,
+               tolerance = 0)
+  # The square mesh has repeated leading eigenvalues. BLAS/LAPACK may choose
+  # different orthonormal axes in that eigenspace; compare the fitted geometry.
+  expect_equal(as.numeric(dist(fast$coords)), as.numeric(dist(full$coords)),
+               tolerance = 1e-10)
   expect_null(fast$diagnostics)
 })
 
-test_that("metric MDS keeps full path cache when diagnostics are requested", {
+test_that("classical MDS keeps full path cache when diagnostics are requested", {
   edges <- edges.mesh(4L, 4L)
-  layout <- metric.mds(edges = edges, n = 16L, dim = 2L, diagnostics = TRUE)
+  layout <- classical.mds(edges = edges, n = 16L, dim = 2L, diagnostics = TRUE)
 
   expect_s3_class(layout$prepared, "grip_gmds_prepared")
   expect_false(inherits(layout$prepared, "grip_metric_mds_prepared"))
@@ -135,18 +140,18 @@ test_that("profiled diagnostics factor out global scale", {
   prepared <- prepare.graph.geodesic.mds(
     edges = edges.path(4L),
     n = 4L,
-    edge_weights = c(1, 2, 1)
+    edge.weights = c(1, 2, 1)
   )
   coords <- 3 * cbind(c(0, 1, 3, 4), 0)
   profiled <- score.gmds(
     coords = coords,
     prepared = prepared,
-    scale_mode = "profiled"
+    scale.mode = "profiled"
   )
   identity <- score.gmds(
     coords = coords,
     prepared = prepared,
-    scale_mode = "identity"
+    scale.mode = "identity"
   )
 
   expect_lt(profiled$edge.rel.rmse[[1L]], 1e-8)

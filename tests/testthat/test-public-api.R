@@ -1,4 +1,4 @@
-test_that("the public API matches the 0.2 contract", {
+test_that("the public API matches the documented development contract", {
   expected <- sort(c(
     "build.misf",
     "build.weighted.misf",
@@ -21,19 +21,21 @@ test_that("the public API matches the 0.2 contract", {
     "edges.sierpinski.tetrahedron",
     "edges.sierpinski.triangle",
     "edges.torus",
+    "estimate.preparation",
+    "layout.coords",
     "geodesic.kk",
     "geometry.diagnostics",
     "globalrep.grip",
     "globalrep.weighted.grip",
     "graph.riemannian.star.structure",
     "grip",
-    "gripui_app",
-    "gripui_family_app",
-    "gripui_graph_family_catalog",
-    "gripui_project",
-    "gripui_project_from_compare",
-    "gripui_project_from_dir",
-    "gripui_validate_project",
+    "gripui.app",
+    "gripui.family.app",
+    "gripui.graph.family.catalog",
+    "gripui.project",
+    "gripui.project.from.compare",
+    "gripui.project.from.dir",
+    "gripui.validate.project",
     "irregular.annulus.surface.graph",
     "irregular.ball.solid.graph",
     "irregular.double.torus.surface.graph",
@@ -49,6 +51,8 @@ test_that("the public API matches the 0.2 contract", {
     "keep.staggered.windows",
     "kernel.gram.gkk",
     "landmark.geodesic.kk",
+    "landmark.mds.constraints",
+    "prepare.sparse.mds",
     "legacy.grip",
     "mask.asymmetric.holes",
     "mask.border",
@@ -63,6 +67,7 @@ test_that("the public API matches the 0.2 contract", {
     "mask.triangle.classic",
     "menger.sponge.surface.graph",
     "mesh.surface.graph",
+    "classical.mds",
     "metric.mds",
     "misf.geodesic.kk",
     "occupied.mesh.surface.graph",
@@ -80,19 +85,23 @@ test_that("the public API matches the 0.2 contract", {
     "recursive.triangle.mask.surface.graph",
     "repulsive.stage",
     "repulsive.state",
-    "run_gripui",
-    "run_gripui_family",
+    "run.gripui",
+    "run.gripui.family",
     "sampled.rectangle.surface.graph",
     "sampled.rectangle.surface.graphs",
     "score.geodesic.kk",
+    "score.coordinates",
     "score.gmds",
     "score.landmark.geodesic.kk",
     "score.layout",
+    "score.surface",
     "score.misf.geodesic.kk",
     "sierpinski.carpet.surface.graph",
     "sierpinski.tetrahedron.surface.graph",
     "sierpinski.triangle.surface.graph",
     "sphere.surface.graph",
+    "suitesparse.graph",
+    "suitesparse.graphs",
     "torus.surface.graph",
     "trace.grip",
     "trace.legacy.grip",
@@ -103,7 +112,7 @@ test_that("the public API matches the 0.2 contract", {
     "weighted.grip.nd"
   ))
 
-  expect_length(expected, 101L)
+  expect_length(expected, 110L)
   expect_identical(sort(getNamespaceExports("grip")), expected)
 })
 

@@ -1,58 +1,35 @@
 ## ----setup, include=FALSE-----------------------------------------------------
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 8.5,
-  fig.height = 5.2
-)
-
-## -----------------------------------------------------------------------------
 library(grip)
+knitr::opts_chunk$set(dev="jpeg", dev.args=list(quality=90), fig.retina=1, dpi=72, collapse=TRUE, comment='#>', fig.width=9, fig.height=5,
+                     out.width='100%')
+source(system.file('scripts','vignette-views.R',package='grip'),local=TRUE)
 
-## -----------------------------------------------------------------------------
-mesh.edges <- edges.mesh(5, 5)
-mesh.coords <- grip(
-  mesh.edges,
-  n = 25,
-  dim = 2,
-  preset = "mesh",
-  seed = 1
-)
+## ----first-layout-------------------------------------------------------------
+g <- suitesparse.graph('dwt_307')
+fit <- metric.mds(edges=g$edges, n=g$n, dim=3, backend="sgd",
+                  seed=1, diagnostics=FALSE)
+coords <- fit$coords
 
-mesh.score <- score.layout(mesh.coords, edges = mesh.edges, n = 25)
-knitr::kable(mesh.score[, c(
-  "sampled.stress",
-  "edge.length.cv",
-  "sampled.nonedge.sep.ratio"
-)], digits = 3)
+## ----first-view, echo=FALSE---------------------------------------------------
+documentation.view(list(`SGD metric MDS`=coords),g$edges,
+  description='dwt_307: 307 vertices. SGD metric MDS with seed 1.')
 
-## ----fig.width=5.2, fig.height=4.6--------------------------------------------
-plot.layout(
-  mesh.coords,
-  mesh.edges,
-  main = "grip() on a 5x5 mesh",
-  pch = 16,
-  cex = 0.65,
-  edge.col = "gray82"
-)
+## ----plot-recipe, eval=FALSE--------------------------------------------------
+# ivue::plot3D.plain(coords, layers=list(ivue::layer3D.edges(g$edges)), controls = FALSE)
 
-## -----------------------------------------------------------------------------
-mesh.cmp <- compare.layouts(
-  edges = mesh.edges,
-  n = 25,
-  dim = 2,
-  candidates = c("default", "mesh", "tree"),
-  seeds = 1:2,
-  sample.size.stress = 500L,
-  sample.size.nonedge = 1000L,
-  edge.crossings = "never"
-)
+## ----score--------------------------------------------------------------------
+quality <- score.layout(coords, edges=g$edges, n=g$n,
+                        edge.crossings='never')
+knitr::kable(quality[,c('sampled.stress','edge.length.cv',
+                       'sampled.nonedge.sep.ratio')],digits=3)
 
-knitr::kable(mesh.cmp$summary[, c(
-  "candidate",
-  "sampled.stress.mean",
-  "edge.length.cv.mean",
-  "sampled.nonedge.sep.ratio.mean",
-  "score.composite"
-)], digits = 3)
+## ----metric-mds-default-------------------------------------------------------
+mds <- suppressWarnings(metric.mds(
+  edges=g$edges, n=g$n, dim=3, init='random',
+  max.iter=80, seed=1, diagnostics=FALSE))
+mds$metadata$termination
+
+## ----methods-view, echo=FALSE-------------------------------------------------
+documentation.view(list('Random start, 80 passes'=mds$coords,'Default initialization, 1000 passes'=coords),g$edges,common.size=TRUE,
+  description='dwt_307: two SGD metric-MDS runs with different initialization and pass budgets. Aligned at a common overall size for display. Seed 1.')
 

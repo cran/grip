@@ -9,10 +9,10 @@ occupied.mesh.surface.graph(
   keep,
   surface = c("saddle", "paraboloid", "ripple"),
   amplitude = 0.75,
-  freq_u = 1,
-  freq_v = 1,
-  x_scale = 1,
-  y_scale = 1,
+  freq.u = 1,
+  freq.v = 1,
+  x.scale = 1,
+  y.scale = 1,
   connectivity = c("orthogonal", "diagonal"),
   normalize = c("median", "mean", "none")
 )
@@ -26,15 +26,15 @@ occupied.mesh.surface.graph(
 \item{amplitude}{Finite numeric amplitude controlling the non-flat
 displacement.}
 
-\item{freq_u}{Positive ripple frequency in the horizontal parameter
+\item{freq.u}{Positive ripple frequency in the horizontal parameter
 direction. Used only when \code{surface = "ripple"}.}
 
-\item{freq_v}{Positive ripple frequency in the vertical parameter direction.
+\item{freq.v}{Positive ripple frequency in the vertical parameter direction.
 Used only when \code{surface = "ripple"}.}
 
-\item{x_scale}{Positive horizontal scaling of the parameter domain.}
+\item{x.scale}{Positive horizontal scaling of the parameter domain.}
 
-\item{y_scale}{Positive vertical scaling of the parameter domain.}
+\item{y.scale}{Positive vertical scaling of the parameter domain.}
 
 \item{connectivity}{Mesh neighborhood rule passed to \code{edges.mesh()}.}
 
@@ -47,22 +47,22 @@ matrix with columns \code{x}, \code{y}, and \code{z}.
 
 \code{occupied.mesh.surface.graph()} returns a list with components:
 \itemize{
-  \item \code{edges}: the occupied-cell mesh edges,
-  \item \code{n}: number of vertices,
-  \item \code{edge_weights}: induced positive edge lengths,
-  \item \code{coords_surface}: the 3D surface embedding,
-  \item \code{coords_param}: the 2D parameter coordinates,
-  \item \code{weight_scale}: the normalization constant applied to the raw
-    edge lengths,
-  \item \code{family}: always \code{"occupied.mesh"},
-  \item \code{surface}: the chosen surface name,
-  \item \code{connectivity}: the chosen occupied-mesh connectivity rule,
-  \item \code{keep}: the logical occupancy matrix,
-  \item \code{label}: a human-readable family label.
+\item \code{edges}: the occupied-cell mesh edges,
+\item \code{n}: number of vertices,
+\item \code{edge_weights}: induced positive edge lengths,
+\item \code{coords_surface}: the 3D surface embedding,
+\item \code{coords_param}: the 2D parameter coordinates,
+\item \code{weight_scale}: the normalization constant applied to the raw
+edge lengths,
+\item \code{family}: always \code{"occupied.mesh"},
+\item \code{surface}: the chosen surface name,
+\item \code{connectivity}: the chosen occupied-mesh connectivity rule,
+\item \code{keep}: the logical occupancy matrix,
+\item \code{label}: a human-readable family label.
 }
 }
 \description{
-`occupied.mesh.surface.graph()` builds a finite occupied-grid graph on the
+\code{occupied.mesh.surface.graph()} builds a finite occupied-grid graph on the
 retained cells of a rectangular occupancy matrix and lifts those cells into
 \eqn{\mathbb{R}^3} using the same
 \code{"saddle"}, \code{"paraboloid"}, and \code{"ripple"} families used

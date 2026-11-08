@@ -16,7 +16,7 @@
 #' - `grip.layout.weighted.nd()` -> [weighted.grip.nd()]
 #' - `grip.plot()` -> [plot.layout()]
 #' - `grip.project.3d()` -> [project.3d()]
-#' - `grip.metric.mds.layout()` -> [metric.mds()]
+#' - `grip.metric.mds.layout()` -> [classical.mds()] (classical scaling)
 #' - `grip.optimize.kernel.gram.gkk.layout()` -> [kernel.gram.gkk()]
 #' - `grip.score.gmds.layout()` -> [score.gmds()]
 #' - `grip.gmds.layout.result()` -> `gmds.result()` (now internal)
@@ -52,7 +52,7 @@
 #' @section Graph-family helpers:
 #' Complete `*.surface.graph()` and `*.solid.graph()` constructors remain
 #' public and return reusable bundles. Use the bundle's `edges`,
-#' `coords_surface`, and `coords_param` components instead of the former
+#' `coords.surface`, and `coords.param` components instead of the former
 #' specialized edge-list, standalone embedding, and parameter-coordinate
 #' exports. Primitive generators such as [edges.path()], [edges.cycle()],
 #' [edges.mesh()], and [edges.cube()] remain public.
@@ -98,4 +98,5 @@
 #' @aliases grip.params.from.summary
 #' @aliases grip.score.layout
 #' @aliases grip.compare.layouts
+#' @md
 NULL

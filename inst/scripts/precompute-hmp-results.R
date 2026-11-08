@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 ## Recompute the HMP/U01 candidate summaries and layouts used by the real-data
-## vignette and R Journal paper.
+## vignette (not the current R Journal paper's uncoarsened UMB-HMP example).
 ##
 ## Set GRIP_HMP_RESULTS_OUTPUT to choose the output file. In a grip source
 ## checkout the default replaces the bundled package artifact. When run from an
@@ -17,6 +17,8 @@ script_path <- if (!is.null(sys.frames()[[1]]$ofile)) {
     mustWork = FALSE
   )
 }
+
+source(file.path(dirname(script_path), "portable-session-info.R"))
 
 source_root <- normalizePath(
   file.path(dirname(script_path), "..", ".."),
@@ -73,8 +75,8 @@ weight_list <- hmp.u01.gc.coarse$weight_list
 n <- length(adj_list)
 
 preset_cmp <- compare.layouts(
-  adj_list = adj_list,
-  weight_list = weight_list,
+  adj.list = adj_list,
+  weight.list = weight_list,
   n = n,
   dim = 3L,
   candidates = c("default", "tree", "torus"),
@@ -86,20 +88,20 @@ preset_cmp <- compare.layouts(
 )
 
 local_search_cmp <- compare.layouts(
-  adj_list = adj_list,
-  weight_list = weight_list,
+  adj.list = adj_list,
+  weight.list = weight_list,
   n = n,
   dim = 3L,
   search = list(
     candidate.prefix = "hmp.local",
     placement = "barycenter",
     rounds = 192L,
-    final_rounds = c(224L, 288L),
-    num_init = 30L,
-    num_nbrs = 10L,
+    final.rounds = c(224L, 288L),
+    num.init = 30L,
+    num.nbrs = 10L,
     r = 0.10,
     s = 2.0,
-    repulsion_factor = c(0.75, 1.25)
+    repulsion.factor = c(0.75, 1.25)
   ),
   clusters = vertex_data$cst,
   seeds = 1L,
@@ -136,7 +138,7 @@ out <- list(
   top_preset = top_preset,
   top_local_candidates = top_search_names,
   layouts = layout_store,
-  session_info = utils::sessionInfo()
+  session_info = portable_session_info()
 )
 
 dir.create(dirname(out.path), recursive = TRUE, showWarnings = FALSE)

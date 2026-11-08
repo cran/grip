@@ -11,8 +11,8 @@ sphere.surface.graph(
   surface = c("standard", "ellipsoid", "wavy"),
   radius = 1,
   amplitude = 0.2,
-  freq_theta = 3,
-  freq_lat = 2,
+  freq.theta = 3,
+  freq.lat = 2,
   twist = 0.25,
   normalize = c("median", "mean", "none")
 )
@@ -34,10 +34,10 @@ positive values make the shape oblate and negative values make it prolate,
 while keeping all axis lengths positive. For \code{"wavy"}, the local
 radius must remain positive everywhere.}
 
-\item{freq_theta}{Positive longitudinal frequency used only when
+\item{freq.theta}{Positive longitudinal frequency used only when
 \code{surface = "wavy"}.}
 
-\item{freq_lat}{Positive latitudinal frequency used only when
+\item{freq.lat}{Positive latitudinal frequency used only when
 \code{surface = "wavy"}.}
 
 \item{twist}{Finite longitude twist applied smoothly by latitude. The twist
@@ -53,16 +53,16 @@ with columns \code{x}, \code{y}, and \code{z}, where
 
 \code{sphere.surface.graph()} returns a list with components:
 \itemize{
-  \item \code{edges}: the undirected sphere-graph edges,
-  \item \code{n}: number of vertices,
-  \item \code{edge_weights}: induced positive edge lengths,
-  \item \code{coords_surface}: the 3D surface embedding,
-  \item \code{coords_param}: the 2D longitude-latitude parameter coordinates,
-  \item \code{weight_scale}: the normalization constant applied to the raw
-    edge lengths,
-  \item \code{family}: always \code{"sphere"},
-  \item \code{surface}: the chosen surface name,
-  \item \code{label}: a human-readable family label.
+\item \code{edges}: the undirected sphere-graph edges,
+\item \code{n}: number of vertices,
+\item \code{edge_weights}: induced positive edge lengths,
+\item \code{coords_surface}: the 3D surface embedding,
+\item \code{coords_param}: the 2D longitude-latitude parameter coordinates,
+\item \code{weight_scale}: the normalization constant applied to the raw
+edge lengths,
+\item \code{family}: always \code{"sphere"},
+\item \code{surface}: the chosen surface name,
+\item \code{label}: a human-readable family label.
 }
 }
 \description{
@@ -73,10 +73,10 @@ graph topology follows the current pole-plus-latitude-rings sphere graph but
 the intended metric comes from a curved or spatially varying 3D realization.
 }
 \details{
-The `coords_surface` component contains the 3D coordinates of the sampled
+The \code{coords.surface} component contains the 3D coordinates of the sampled
 surface in the same vertex order as \code{edges}: north pole first,
 then latitude rings from north to south, then the south pole.
-`sphere.surface.graph()` returns a reusable weighted-graph bundle containing
+\code{sphere.surface.graph()} returns a reusable weighted-graph bundle containing
 the sphere edges, induced edge weights, the 3D surface coordinates, and a 2D
 longitude-latitude parameterization.
 }

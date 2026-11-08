@@ -14,17 +14,18 @@
 #'   status = "ok",
 #'   stringsAsFactors = FALSE
 #' )
-#' project <- gripui_project(graph = graph, layouts = layouts, title = "Toy project")
-#' app <- gripui_app(project)
+#' project <- gripui.project(graph = graph, layouts = layouts, title = "Toy project")
+#' app <- gripui.app(project)
 #' inherits(app, "shiny.appobj")
-gripui_app <- function(project) {
-  gripui_validate_project(project)
+#' @md
+gripui.app <- function(project) {
+  gripui.validate.project(project)
   old <- gripui.require.app.packages()
   on.exit(options(rgl.useNULL = old), add = TRUE)
 
   shiny::shinyApp(
-    ui = gripui_ui(),
-    server = gripui_server(project)
+    ui = gripui.ui(),
+    server = gripui.server(project)
   )
 }
 
@@ -41,7 +42,7 @@ gripui_app <- function(project) {
 #' @return Invisibly returns the result of `shiny::runApp()`.
 #' @export
 #'
-#' @examplesIf local({ old <- getOption("rgl.useNULL"); options(rgl.useNULL = TRUE); on.exit(options(rgl.useNULL = old), add = TRUE); requireNamespace("shiny", quietly = TRUE) && requireNamespace("bslib", quietly = TRUE) && requireNamespace("DT", quietly = TRUE) && requireNamespace("htmltools", quietly = TRUE) && requireNamespace("rgl", quietly = TRUE) && requireNamespace("later", quietly = TRUE) })
+#' @examplesIf local({ old <- getOption("rgl.useNULL"); options(rgl.useNULL = TRUE); on.exit(options(rgl.useNULL = old), add = TRUE); packages <- c("shiny", "bslib", "DT", "htmltools", "rgl", "later", "httpuv"); if (!all(vapply(packages, requireNamespace, logical(1), quietly = TRUE))) return(FALSE); server <- tryCatch(httpuv::startServer("127.0.0.1", 0L, list(call = function(req) list(status = 200L, headers = list(), body = "ok"))), error = function(e) NULL); if (is.null(server)) return(FALSE); server$stop(); TRUE })
 #' graph <- list(adj_list = list(2L, c(1L, 3L), 2L))
 #' layouts <- data.frame(
 #'   candidate = "toy.layout",
@@ -50,20 +51,21 @@ gripui_app <- function(project) {
 #'   status = "ok",
 #'   stringsAsFactors = FALSE
 #' )
-#' project <- gripui_project(graph = graph, layouts = layouts, title = "Toy project")
-#' run_gripui(
+#' project <- gripui.project(graph = graph, layouts = layouts, title = "Toy project")
+#' run.gripui(
 #'   project,
 #'   launch.browser = FALSE,
 #'   quiet = TRUE,
 #'   auto.stop.after = 0.1
 #' )
-run_gripui <- function(project,
+#' @md
+run.gripui <- function(project,
                        host = "127.0.0.1",
                        port = getOption("shiny.port"),
                        launch.browser = interactive(),
                        auto.stop.after = NULL,
                        ...) {
-  app <- gripui_app(project)
+  app <- gripui.app(project)
 
   if (!is.null(auto.stop.after)) {
     if (!requireNamespace("later", quietly = TRUE)) {

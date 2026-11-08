@@ -1,162 +1,131 @@
 ---
 title: "Getting Started with grip"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{Getting Started with grip}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+<style>
+body { max-width: 1050px; }
+body:has(nav.navbar) { max-width: none; }
+.ivue-legend { max-width: 100%; }
+.rglWebGL { max-width: 100%; }
+th, td { vertical-align: top; }
+pre { overflow-x: auto; }
+</style>
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 8.5,
-  fig.height = 5.2
-)
-```
-
-## What this vignette covers
-
-`grip` has four main user workflows:
-
-- `grip(metric = "hop")` for ordinary unweighted or topology-first graphs,
-- `grip(metric = "edge_length")` when edge lengths carry geometry you want to keep,
-- `compare.layouts()` and `score.layout()` when you want a
-  disciplined real-data shortlist,
-- `trace.grip()` with the corresponding metric when you need diagnostics
-  rather than just a final picture.
-
-This vignette is the shortest path through the default workflow. It shows how
-to:
-
-- compute a first unweighted layout,
-- score it,
-- compare a few plausible candidates,
-- and decide when to switch to the specialist guides.
-
-For weighted layouts, real-data search, tracing, and interactive exploration,
-the later guides go deeper. Advanced GKK/LGKK tools are public, but they are
-treated as later-stage experimental helpers rather than the default starting
-point.
-
-```{r}
 library(grip)
+knitr::opts_chunk$set(dev="jpeg", dev.args=list(quality=90), fig.retina=1, dpi=72, collapse=TRUE, comment='#>', fig.width=9, fig.height=5,
+                     out.width='100%')
+source(system.file('scripts','vignette-views.R',package='grip'),local=TRUE)
 ```
 
-## A first unweighted layout
+Installed figures use static projections. To enable 3D rotation and layout
+selection, render with `options(grip.vignette.interactive = TRUE)` and
+**ivue** and **rgl** installed.
 
-For an ordinary unweighted graph, `grip()` is the default starting
-point. Here is a small mesh in 2D.
 
-```{r}
-mesh.edges <- edges.mesh(5, 5)
-mesh.coords <- grip(
-  mesh.edges,
-  n = 25,
-  dim = 2,
-  preset = "mesh",
-  seed = 1
-)
+Start with a graph whose structure you want to explore. This example uses
+**dwt_307**, a 307-vertex structural graph from the
+[SuiteSparse Matrix Collection](https://sparse.tamu.edu/HB/dwt_307), supplied
+with grip. Its edges describe connectivity; the drawing has no known spatial
+reference that the layout must recover.
 
-mesh.score <- score.layout(mesh.coords, edges = mesh.edges, n = 25)
-knitr::kable(mesh.score[, c(
-  "sampled.stress",
-  "edge.length.cv",
-  "sampled.nonedge.sep.ratio"
-)], digits = 3)
+## Load a graph and draw it
+
+```{r first-layout}
+g <- suitesparse.graph('dwt_307')
+fit <- metric.mds(edges=g$edges, n=g$n, dim=3, backend="sgd",
+                  seed=1, diagnostics=FALSE)
+coords <- fit$coords
 ```
 
-```{r fig.width=5.2, fig.height=4.6}
-plot.layout(
-  mesh.coords,
-  mesh.edges,
-  main = "grip() on a 5x5 mesh",
-  pch = 16,
-  cex = 0.65,
-  edge.col = "gray82"
-)
+Each row of `g$edges` contains two vertex indices, numbered from 1 to `g$n`.
+Each row of `coords` gives the position of the corresponding vertex.
+Metric MDS with SGD fits Euclidean separations to graph shortest-path distances.
+Here all edges have unit length, so targets are hop distances. Inspect the fit
+diagnostics and termination status; a returned layout does not imply convergence.
+
+```{r first-view, echo=FALSE}
+documentation.view(list(`SGD metric MDS`=coords),g$edges,
+  description='dwt_307: 307 vertices. SGD metric MDS with seed 1.')
 ```
 
-For small and medium unweighted graphs, that is often all you need:
+Rotate the graph to inspect its structure. All vertices and edges are shown.
+For a quick view in an interactive R session, use:
 
-- choose `dim = 2` or `dim = 3`,
-- optionally start from a preset,
-- and score or compare a few candidate settings if the graph is important.
-
-## Compare a few plausible candidates
-
-If the first picture matters, it is usually better to compare a short candidate
-list than to tune blindly. `compare.layouts()` runs several seeds and
-summarizes the results in a score table.
-
-```{r}
-mesh.cmp <- compare.layouts(
-  edges = mesh.edges,
-  n = 25,
-  dim = 2,
-  candidates = c("default", "mesh", "tree"),
-  seeds = 1:2,
-  sample.size.stress = 500L,
-  sample.size.nonedge = 1000L,
-  edge.crossings = "never"
-)
-
-knitr::kable(mesh.cmp$summary[, c(
-  "candidate",
-  "sampled.stress.mean",
-  "edge.length.cv.mean",
-  "sampled.nonedge.sep.ratio.mean",
-  "score.composite"
-)], digits = 3)
+```{r plot-recipe, eval=FALSE}
+ivue::plot3D.plain(coords, layers=list(ivue::layer3D.edges(g$edges)), controls = FALSE)
 ```
 
-That same pattern scales to real graphs:
+## Assess the drawing
 
-- shortlist a few plausible presets,
-- run several seeds,
-- inspect the summary table before choosing a favorite picture,
-- then search locally only if the graph is important enough to justify it.
+```{r score}
+quality <- score.layout(coords, edges=g$edges, n=g$n,
+                        edge.crossings='never')
+knitr::kable(quality[,c('sampled.stress','edge.length.cv',
+                       'sampled.nonedge.sep.ratio')],digits=3)
+```
 
-## What if the graph is weighted?
+Sampled stress compares drawn distances with graph shortest paths after fitting
+one common scale; smaller values mean closer agreement. Edge-length variation
+shows how evenly the unit edges are drawn. Nonedge separation describes how
+far apart unconnected vertices lie relative to edges. These measures describe
+different aspects of a drawing; no single number captures readability.
 
-If a graph has edge weights but those weights are mostly metadata, a
-topology-first `grip()` run can still be a useful baseline. When the
-edge lengths represent geometry that the layout should preserve, the default
-path changes:
+## Metric MDS controls
 
-- start from `grip(metric = "edge_length")`,
-- prefer 3D when the graph geometry is genuinely three-dimensional,
-- and add GKK/LGKK only later if you need advanced geodesic-aware scoring or
-  polish on a smaller weighted candidate set.
+`metric.mds()` directly fits Euclidean distances to graph shortest-path
+distances. Its default SGD backend adjusts pairs of vertices in shuffled order,
+following [Zheng, Pawar and Goodman (2018)](https://doi.org/10.1109/TVCG.2018.2859997)
+with the learning-rate schedule of
+[Hangan, Kobourov and Miller (2026)](https://arxiv.org/abs/2605.00641).
 
-## When should you switch workflows?
+```{r metric-mds-default}
+mds <- suppressWarnings(metric.mds(
+  edges=g$edges, n=g$n, dim=3, init='random',
+  max.iter=80, seed=1, diagnostics=FALSE))
+mds$metadata$termination
+```
 
-Start with `grip()` when the graph is fundamentally unweighted and you
-mainly care about its combinatorial structure.
+The 80-pass allowance is a short illustrative setting. Schedule completion
+reports `iteration_limit`; it does not establish convergence. The figure
+compares this random-start, 80-pass fit with the default-initialization MDS
+fit above, which uses the default 1,000-pass budget. The display allows rotation,
+reflection, and translation and matches overall size with one uniform multiplier
+per layout. This does not change the fitted coordinates or scores. Because both
+initialization and budget differ, this is an illustration, not an isolated test
+of either choice.
 
-Switch to the other guides when the task changes:
+```{r methods-view, echo=FALSE}
+documentation.view(list('Random start, 80 passes'=mds$coords,'Default initialization, 1000 passes'=coords),g$edges,common.size=TRUE,
+  description='dwt_307: two SGD metric-MDS runs with different initialization and pass budgets. Aligned at a common overall size for display. Seed 1.')
+```
 
-- use `grip(metric = "edge_length")` when edge lengths encode geometry you care
-  about,
-- use `compare.layouts()` on real graphs when you want a disciplined
-  shortlist rather than a single run,
-- use `trace.grip()` or `trace.grip(metric = "edge_length")` when you want to
-  inspect how a solve evolves,
-- use GKK/LGKK only after you already have weighted candidate layouts and need
-  advanced experimental geodesic-aware scoring or polish,
-- use `run_gripui()` or `run_gripui_family()` in an interactive R session when
-  you want app-based exploration.
+Select a layout below the figure, or show both. For optimizer and weighting
+choices, continue to [Metric MDS](metric-mds-backends.html). Larger graphs may
+benefit from [sparse metric MDS](sparse-metric-mds.html).
 
-## Where to go next
+## Choose the next step
 
-- `Weighted Graph Layouts with grip` covers weighted solving, geodesic scoring,
-  and 2D-versus-3D decisions.
-- `Choosing Layouts for Real Data` focuses on candidate shortlisting, local
-  search, and real-data evaluation.
-- `Tracing and Diagnosing Layouts` covers trace objects and per-frame
-  diagnostics.
-- `Interactive Exploration with gripui` is a website article about the
-  package's Shiny tools.
-- `Synthetic Graph Families and Geometries` is a website article about the
-  benchmark and geometry library.
+| Your next question | Vignette |
+|---|---|
+| What functions are available? | [Finding your way around grip](function-guide.html) |
+| What other graphs can I draw? | [Graph gallery](synthetic-graph-families.html) |
+| Which settings or seeds should I use? | [Choosing and evaluating a layout](grip-real-data.html) |
+| How do normalization and distance affect a 3D fit? | [What does a 3D embedding preserve?](https://pgajer.github.io/grip/articles/embedding-fidelity.html) (website article) |
+| Should I refit a selection or keep its population coordinates? | [Local embeddings versus subsets of a global embedding](https://pgajer.github.io/grip/articles/local-global-embeddings.html) (website article) |
+| How do I compare views with consistent colors, scales and cameras? | [Comparing scientific views in ivue](https://pgajer.github.io/ivue/doc/ivue-introduction.html#comparing-scientific-views) |
+| My edges represent distances | [Layouts with meaningful edge lengths](weighted-grip-intro.html) |
+| How did the drawing develop? | [Tracing and diagnosing layouts](grip-trace-and-diagnostics.html) |
+| How do I explore saved results? | [Interactive exploration with gripui](gripui-explorer.html) |
+
+Edge values that describe connection strength are not automatically suitable
+as distances. In particular, the bundled SuiteSparse examples use unit traversal
+lengths and retain their original matrix values separately. The graph gallery
+provides source attribution and conversion details.
